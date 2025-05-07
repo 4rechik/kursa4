@@ -1,0 +1,9 @@
+nginx
+pip install Flask
+pip install gunicorn - вот тут хз
+pip install waitress
+pip install PyJWT
+pip install SQLAlchemy
+pip install Flask-SQLAlchemy
+
+pip install flask Flask-SQLAlchemy PyJWT Werkzeug waitress
