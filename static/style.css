@@ -1,0 +1,132 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 20px;
+    background-color: #f8f9fa; /* Светло-серый фон */
+    color: #333;
+}
+
+.container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 30px auto;
+}
+
+h1 {
+    text-align: center;
+    color: #007bff; /* Синий заголовок */
+    margin-bottom: 20px;
+}
+
+p {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #6c757d; /* Серый текст */
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.error {
+    color: #dc3545; /* Красный цвет для ошибок */
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+form {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    flex-grow: 1;
+    padding: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px 0 0 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+button {
+    background-color: #28a745; /* Зеленая кнопка */
+    color: white;
+    padding: 12px 15px;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+}
+
+li:last-child {
+    border-bottom: none;
+}
+
+li span.done {
+    text-decoration: line-through;
+    color: #6c757d;
+}
+
+li a {
+    margin-left: 15px;
+    color: #007bff;
+}
+
+li a.done-button {
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+li a.done-button:hover {
+    background-color: #0056b3;
+}
+
+li a.delete-button {
+    background-color: #dc3545;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+li a.delete-button:hover {
+    background-color: #c82333;
+}
+
+li a.edit-button {
+    background-color: #ffc107; /* Желтый цвет для редактирования */
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 4px;
+    margin-left: 10px;
+}
+
+li a.edit-button:hover {
+    background-color: #e0a800;
+}
