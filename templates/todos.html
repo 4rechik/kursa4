@@ -12,7 +12,7 @@
         <form method="POST" action="{{ url_for('add_todo') }}">
             <input type="text" name="task" placeholder="Новая задача" required>
             <button type="submit">Добавить</button>
-        </form>
+        </form>>
         <ul>
             {% for todo in todos %}
             <li>
@@ -27,38 +27,20 @@
             </li>
             {% endfor %}
         </ul>
+        <p>
+            Привет, {{ session['username'] }}!
+            <a href="{{ url_for('logout') }}">Выйти</a> |
+            Фильтр:
+            <a href="{{ url_for('todos_page') }}" {% if not current_status %}class="active"{% endif %}>Все</a> |
+            <a href="{{ url_for('todos_page', status='undone') }}" {% if current_status == 'undone' %}class="active"{% endif %}>Невыполненные</a> |
+            <a href="{{ url_for('todos_page', status='done') }}" {% if current_status == 'done' %}class="active"{% endif %}>Выполненные</a> |
+            Сортировка:
+            <a href="{{ url_for('todos_page', sort_by='created_desc') }}" {% if current_sort == 'created_desc' %}class="active"{% endif %}>Новые</a> |
+            <a href="{{ url_for('todos_page', sort_by='alpha_asc') }}" {% if current_sort == 'alpha_asc' %}class="active"{% endif %}>А-Я</a> |
+            <a href="{{ url_for('todos_page', sort_by='alpha_desc') }}" {% if current_sort == 'alpha_desc' %}class="active"{% endif %}>Я-А</a> |
+            <a href="{{ url_for('todos_page', sort_by='status_undone_first') }}" {% if current_sort == 'status_undone_first' %}class="active"{% endif %}>Сначала невыполненные</a> |
+            <a href="{{ url_for('todos_page', sort_by='status_done_first') }}" {% if current_sort == 'status_done_first' %}class="active"{% endif %}>Сначала выполненные</a>
+        </p>
     </div>
-    <li>
-        <span class="{{ 'done' if todo.done else '' }}">{{ todo.task }}</span>
-        <div>
-            {% if not todo.done %}
-            <a href="{{ url_for('mark_done', todo_id=todo.id) }}" class="done-button">Выполнено</a>
-            {% endif %}
-            <a href="{{ url_for('edit_todo', todo_id=todo.id) }}" class="edit-button">Редактировать</a>
-            <a href="{{ url_for('delete_todo', todo_id=todo.id) }}" class="delete-button">Удалить</a>
-        </div>
-    </li>
-    <p>
-        Привет, {{ session['username'] }}!
-        <a href="{{ url_for('logout') }}">Выйти</a> |
-        Фильтр:
-        <a href="{{ url_for('todos_page') }}" {% if not current_status %}class="active"{% endif %}>Все</a> |
-        <a href="{{ url_for('todos_page', status='undone') }}" {% if current_status == 'undone' %}class="active"{% endif %}>Невыполненные</a> |
-        <a href="{{ url_for('todos_page', status='done') }}" {% if current_status == 'done' %}class="active"{% endif %}>Выполненные</a>
-    </p>
-    <p>
-        Привет, {{ session['username'] }}!
-        <a href="{{ url_for('logout') }}">Выйти</a> |
-        Фильтр:
-        <a href="{{ url_for('todos_page') }}" {% if not current_status %}class="active"{% endif %}>Все</a> |
-        <a href="{{ url_for('todos_page', status='undone') }}" {% if current_status == 'undone' %}class="active"{% endif %}>Невыполненные</a> |
-        <a href="{{ url_for('todos_page', status='done') }}" {% if current_status == 'done' %}class="active"{% endif %}>Выполненные</a> |
-        Сортировка:
-        <a href="{{ url_for('todos_page', sort_by='created_desc') }}" {% if current_sort == 'created_desc' %}class="active"{% endif %}>Новые</a> |
-        <a href="{{ url_for('todos_page', sort_by='alpha_asc') }}" {% if current_sort == 'alpha_asc' %}class="active"{% endif %}>А-Я</a> |
-        <a href="{{ url_for('todos_page', sort_by='alpha_desc') }}" {% if current_sort == 'alpha_desc' %}class="active"{% endif %}>Я-А</a> |
-        <a href="{{ url_for('todos_page', sort_by='status_undone_first') }}" {% if current_sort == 'status_undone_first' %}class="active"{% endif %}>Сначала невыполненные</a> |
-        <a href="{{ url_for('todos_page', sort_by='status_done_first') }}" {% if current_sort == 'status_done_first' %}class="active"{% endif %}>Сначала выполненные</a>
-    </p>
 </body>
 </html>

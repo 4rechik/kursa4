@@ -6,10 +6,10 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_super_secret_key'  # Обязательно смени на что-то ОЧЕНЬ секретное!
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db' # SQLAlchemy: Путь к нашей SQLite базе данных
+app.config['SECRET_KEY'] = 'your_super_secret_key'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
-JWT_SECRET = 'another_very_secret_key'  # Ключ для подписи JWT
+JWT_SECRET = 'another_very_secret_key'
 
 # SQLAlchemy: Определяем модель пользователя
 class User(db.Model):
@@ -76,15 +76,25 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        print(f"Попытка входа: username={username}, password={password}")
         user = db.session.execute(db.select(User).filter_by(username=username)).scalar_one_or_none()
-        if user and user.check_password(password):
-            token = jwt.encode({'username': username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)}, JWT_SECRET, algorithm='HS256')
-            session['user_id'] = user.id
-            session['username'] = user.username
-            response = redirect(url_for('todos_page'))
-            response.set_cookie('jwt_token', token, httponly=True)
-            return response
-        return render_template('login.html', error='Неверное имя пользователя или пароль')
+        if user:
+            print(f"Пользователь найден: {user.username}")
+            if user.check_password(password):
+                print("Пароль верный")
+                token = jwt.encode({'username': username, 'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)}, JWT_SECRET, algorithm='HS256')
+                session['user_id'] = user.id
+                session['username'] = user.username
+                response = redirect(url_for('todos_page'))
+                response.set_cookie('jwt_token', token, httponly=True)
+                print("Редирект на todos_page")
+                return response
+            else:
+                print("Неверный пароль")
+                return render_template('login.html', error='Неверное имя пользователя или пароль')
+        else:
+            print("Пользователь не найден")
+            return render_template('login.html', error='Неверное имя пользователя или пароль')
     return render_template('login.html')
 
 @app.route('/logout')
@@ -112,4 +122,61 @@ def todos_page(status=None, sort_by='created_desc'):
         query = query.filter_by(done=False)
 
     if sort_by == 'alpha_asc':
-        query = query.order
+        query = query.order_by(Todo.task)
+    elif sort_by == 'alpha_desc':
+        query = query.order_by(Todo.task.desc())
+    elif sort_by == 'status_done_first':
+        query = query.order_by(Todo.done.desc(), Todo.created_at.desc())
+    elif sort_by == 'status_undone_first':
+        query = query.order_by(Todo.done.asc(), Todo.created_at.desc())
+    else: # Default: created_desc
+        query = query.order_by(Todo.created_at.desc())
+
+    todos = db.session.execute(query).scalars().all()
+    print(todos)
+    return render_template('todos.html', todos=todos, current_status=status, current_sort=sort_by)
+@app.route('/add', methods=['POST'])
+@token_required
+def add_todo():
+    task = request.form['task']
+    user_id = session['user_id']
+    new_todo = Todo(task=task, user_id=user_id)
+    db.session.add(new_todo)
+    db.session.commit()
+    return redirect(url_for('todos_page'))
+
+@app.route('/mark_done/<int:todo_id>')
+@token_required
+def mark_done(todo_id):
+    todo = db.session.get(Todo, todo_id)
+    if todo and todo.user_id == session['user_id']:
+        todo.done = True
+        db.session.commit()
+    return redirect(url_for('todos_page'))
+
+@app.route('/edit/<int:todo_id>', methods=['GET', 'POST'])
+@token_required
+def edit_todo(todo_id):
+    todo = db.session.get(Todo, todo_id)
+    if not todo or todo.user_id != session['user_id']:
+        return redirect(url_for('todos_page'))
+    if request.method == 'POST':
+        todo.task = request.form['task']
+        db.session.commit()
+        return redirect(url_for('todos_page'))
+    return render_template('edit_todo.html', todo=todo) # Вам нужно создать этот шаблон
+
+@app.route('/delete/<int:todo_id>')
+@token_required
+def delete_todo(todo_id):
+    todo = db.session.get(Todo, todo_id)
+    if todo and todo.user_id == session['user_id']:
+        db.session.delete(todo)
+        db.session.commit()
+    return redirect(url_for('todos_page'))
+
+with app.app_context():
+    db.create_all()
+
+if __name__ == '__main__':
+    app.run(debug=True)
